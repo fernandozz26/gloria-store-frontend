@@ -1,0 +1,8 @@
+{
+  "/order/*": {
+    "target": "http://localhost:8080",
+    "security":false,
+    "logLevel": "debug"
+  }
+ 
+}

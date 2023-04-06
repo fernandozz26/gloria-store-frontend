@@ -1,0 +1,36 @@
+<div class="full-screen-component">
+
+    <div class="component-full-with-centered">
+
+        <div class="w-100">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>No Orden</th>
+                        <th>Apertura</th>
+                        <th>Ultima Modificacion</th>
+                        <th>Estatus</th>
+                        <th>Tipo</th>
+                        <th>Total</th>
+                        <th>Comandos</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let order of orderData">
+                        <td>{{order.orderId}}</td>
+                        <td>{{order.startDate}}</td>
+                        <td>{{order.endDate}}</td>
+                        <td>{{order.isClosed == "true" ? "Cerrado" : "Abierto"}}</td>
+                        <td>{{order.orderType}}</td>
+                        <td>{{order.total}}</td>
+                        <td>
+                            <button mat-mini-fab color="warn"  class="m-3" (click)="generetePDF(order.orderId)"><mat-icon>picture_as_pdf</mat-icon></button>
+                            <button mat-mini-fab color="secondary" *ngIf="order.isClosed == 'false'"  class="m-3"><mat-icon>edit</mat-icon></button>
+                            <button mat-mini-fab color="warn" *ngIf="order.isClosed == 'true'" class="m-3"><mat-icon>play_circle_filled</mat-icon></button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

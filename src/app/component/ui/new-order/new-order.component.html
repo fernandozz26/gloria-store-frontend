@@ -1,0 +1,94 @@
+<div class="full-screen-component">
+
+    <div class="component-full-with-centered">
+        <div class="w-100">
+            <h2>Generar nuevo pedido</h2>
+
+            <table class="w-100">
+                <thead>
+                    <tr style="text-align: center;">
+                        <th>No. Pedido</th>
+                        <th>Fecha apertura </th>
+                        <th>Fecha cierre</th>
+                        <th>Total</th>
+                        <th>Tipo de Pedido</th>
+                        <th>Accion</th>
+                    </tr>
+                    
+                </thead>
+                <tbody >
+                    <tr style="text-align: center;">
+                        <td width="100px" ><div class="input-group input-group-sm"><input class="form-control" type="text" [(ngModel)]="currentIdOrder" disabled></div></td>
+                        <td ><div class="input-group input-group-sm"><input class="form-control" type="text"  [(ngModel)]="startDateOrder" disabled></div></td>
+                        <td ><div class="input-group input-group-sm"><input class="form-control" type="text" [(ngModel)]="endDate" disabled></div></td>
+                        <td ><div class="input-group input-group-sm"><input class="form-control" type="text" [value]="denomination +'      ' +totalOrder"  disabled></div></td>
+                        <td ><div class="input-group input-group-sm"><input class="form-control" type="text" [(ngModel)]="orderType"></div></td>
+                        <td><button mat-flat-button color="primary" (click)="saveNewOrder()" ><mat-icon>note_add</mat-icon>Nuevo</button></td>
+                        
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="custom-row w-100 mt-3">
+                
+                <div class=" d-flex input-group input-group-sm" style="position: relative; left: 0; width: 50%; height: 37px;">
+                    <input type="text" placeholder="Nombre Cliente" class="form-control" [(ngModel)]="currentClientName">
+                
+                    <button mat-raised-button color="primary" (click)="addClientToOrder()">
+                        Guardar
+                    </button>
+
+                    <select class="form-select ms-5" [(ngModel)]="selectedClientValue" id="selectedClientValue" (change)="selectClientChange($event)" aria-label="Default select example">
+                        
+                        <option *ngFor="let client of clientsData" [ngValue]="client.clientNameId">{{client.clientName}}</option>
+                        
+                      </select>
+
+                </div>
+                
+                
+                
+            </div>
+
+            <table class="w-100 mt-3">
+                <thead style="text-align: center;">
+                    <th>Id</th>
+                    <th>Image</th>
+                    <th>Nombre</th>
+                    <th>Cantidad</th>
+                    <th>Precio unitario</th>
+                    <th>Total</th>
+                    <th>Comando</th>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td width="30px" height="100px"></td>
+                        <td><img src=""  width="75" height="75" class="mini-picture" id="imgOrderDetail" (click)="imgClick()"></td>
+                        <td><div class="input-group input-group-sm"><input type="text" disabled class="form-control" [value]="currentClientName"></div></td>
+                        <td><div class="input-group input-group-sm"><input type="number" class="form-control" min="1" (keypress)="onlyNumbers($event)" min="1" [(ngModel)]="currentProductQuantity"></div></td>
+                        <td><div class="input-group input-group-sm"><input type="text" class="form-control" (keypress)="decimalNumbers($event)" [(ngModel)]="currentProductPrice"></div></td>
+                        <td><div class="input-group input-group-sm"><input type="text" disabled class="form-control" [value]="'$ ' + currentProductQuantity * currentProductPrice"></div></td>
+                        <td><button mat-mini-fab color="primary" (click)="agregarDetallePedido()" class="m-3"><mat-icon>save</mat-icon></button></td>
+                    </tr>
+                    <tr *ngFor="let orderDetail of orderDetailData">
+                        <td width="100px"><div class="input-group input-group-sm"><input type="text" class="form-control" disabled [value]="orderDetail.orderDetailId"></div></td>
+                        <td><img [src]="base64ToImg(orderDetail.img)" [alt]="orderDetail.img ? '' : 'Sin contenido'" width="75" height="75" class="mini-picture"></td>
+                        <td><div class="input-group input-group-sm"><input type="text" class="form-control" [value]="getClienNameById(orderDetail.clientNameId)" disabled></div></td>
+                        <td><div class="input-group input-group-sm"><input type="number" class="form-control" min="1" (keypress)="onlyNumbers($event)" min="1" [(ngModel)]="orderDetail.productQuantity"></div></td>
+                        <td><div class="input-group input-group-sm"><input type="text" class="form-control" (keypress)="decimalNumbers($event)" [(ngModel)]="orderDetail.productPrice"></div></td>
+                        <td><div class="input-group input-group-sm"><input type="text" class="form-control" disabled [value]=" '$ ' + orderDetail.productPrice * orderDetail.productQuantity"></div></td>
+                        <td><button mat-mini-fab color="secondary" (click)="updateOrderDetail(orderDetail)" class="m-3"><mat-icon>edit</mat-icon></button></td>
+                        <td><button mat-mini-fab color="warn" (click)="deleteOrderDetail(orderDetail.orderDetailId)"><mat-icon>delete</mat-icon></button></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="custom-row mb-3 ">
+               
+                <button class="m-3" mat-raised-button color="primary" (click)="saveOrderState()">Guardar Pedido</button>
+                <button class="m-3" mat-raised-button color="warn" (click)="saveOrderState(true)">Cerrar Pedido</button>
+            </div>
+
+        </div>
+    </div>
+</div>
