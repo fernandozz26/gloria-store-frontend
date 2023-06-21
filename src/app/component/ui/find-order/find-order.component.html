@@ -25,8 +25,11 @@
                         <td>{{order.total}}</td>
                         <td>
                             <button mat-mini-fab color="warn"  class="m-3" (click)="generetePDF(order.orderId)"><mat-icon>picture_as_pdf</mat-icon></button>
-                            <button mat-mini-fab color="secondary" *ngIf="order.isClosed == 'false'"  class="m-3"><mat-icon>edit</mat-icon></button>
+                            <button mat-mini-fab color="secondary" (click)="setSelectedOrderId(order.orderId)"  class="m-3"><mat-icon>edit</mat-icon></button>
+                            <!--
                             <button mat-mini-fab color="warn" *ngIf="order.isClosed == 'true'" class="m-3"><mat-icon>play_circle_filled</mat-icon></button>
+
+                            -->
                         </td>
                     </tr>
                 </tbody>

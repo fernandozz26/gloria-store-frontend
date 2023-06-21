@@ -2,12 +2,10 @@ import { Component } from '@angular/core';
 import { Order, OrderDetail } from '../../classes/pedido.class';
 import { HttpClient } from '@angular/common/http';
 import {EndPointConstant} from '../../../constants/constants'
-import jspdf from 'jspdf';
-import { isEmpty } from 'rxjs';
-import html2canvas from 'html2canvas';
 import { ClientName } from '../../classes/client.class';
 import { DomSanitizer } from '@angular/platform-browser';
 import { OrderReports } from 'src/app/shared/reports/order-report';
+import { OrderService } from 'src/app/services/order.service';
 @Component({
   selector: 'app-find-order',
   templateUrl: './find-order.component.html',
@@ -18,10 +16,13 @@ import { OrderReports } from 'src/app/shared/reports/order-report';
 export class FindOrderComponent {
  
   orderData: Order[] = [];
+  selectedOrderId: number = 0;
 
-  constructor(private http: HttpClient,private _sanitizer: DomSanitizer){}
+  constructor(private http: HttpClient,private _sanitizer: DomSanitizer, private readonly orderSvc: OrderService){}
   
   ngOnInit():void{
+
+    this.orderSvc.orderId$.subscribe(orderId => {this.selectedOrderId = orderId})
     this.http.get<Order[]>(EndPointConstant.ORDER_ENDPOINT+"all").subscribe(
       res => {
         this.orderData = res;
@@ -31,7 +32,6 @@ export class FindOrderComponent {
 
 
   generetePDF(orderId: number):void {
-    let doc = new jspdf('p', 'mm', 'a4');
     
     let order!:Order;
     let orderDetail!: OrderDetail[];
@@ -103,6 +103,10 @@ export class FindOrderComponent {
       windowWidth: 675
     })
     */
+  }
+
+  setSelectedOrderId(orderId: number): void{
+    this.orderSvc.setOrder(orderId);
   }
   
 }

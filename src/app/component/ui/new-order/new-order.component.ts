@@ -4,6 +4,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import {HostListener} from '@angular/core'
 import {EndPointConstant} from '../../../constants/constants'
 import { HttpClient } from '@angular/common/http';
+import { OrderService } from 'src/app/services/order.service';
 @Component({
   selector: 'app-new-order',
   templateUrl: './new-order.component.html',
@@ -40,14 +41,29 @@ export class NewOrderComponent {
   clienIdData = [];
   orderDetailData: OrderDetail[] = [];
 
-  constructor(private _sanitizer: DomSanitizer, private http: HttpClient){}
+  // servicios observables
+  selectedOrderId: number = 0;
+  //orderId$ = this.orderSvc.selectedOrder$;
+
+  constructor(private _sanitizer: DomSanitizer, private http: HttpClient,private readonly orderSvc: OrderService){}
 
   ngOnInit():void{
+    
     let date = new Date();
     this.startDateOrder = date.getDate().toString().padStart(2,'0') + "/" + (parseInt(date.getMonth().toString())+1).toString().padStart(2,'0') + "/" + date.getFullYear().toString().padStart(2,'0');
     this.endDate = this.startDateOrder + " " + date.getHours().toString().padStart(2,'0') + ":" + date.getMinutes().toString().padStart(2,'0') + ":" + date.getSeconds().toString().padStart(2,'0');
   
-    this.getLastUnclosedOrder();
+    if(this.selectedOrderId == 0){
+      this.getLastUnclosedOrder();
+    }
+    
+
+    this.orderSvc.orderId$.subscribe(orderId => {
+      this.selectedOrderId = orderId;
+      if(orderId > 0){
+        this.getOrderById(this.selectedOrderId);
+      }
+    })
     
   }
 
@@ -251,7 +267,7 @@ export class NewOrderComponent {
         endDate: date.getDate().toString().padStart(2,'0') + "/" + (parseInt(date.getMonth().toString())+1).toString().padStart(2,'0') 
         + "/" + date.getFullYear().toString().padStart(2,'0') + " " + date.getHours().toString().padStart(2,'0') + ":" 
         + date.getMinutes().toString().padStart(2,'0') + ":" + date.getSeconds().toString().padStart(2,'0'),
-        total: this.totalOrder,
+        total: 0,
         isClosed: 'false',
         orderType: this.orderType
       }
@@ -270,7 +286,7 @@ export class NewOrderComponent {
         endDate: date.getDate().toString().padStart(2,'0') + "/" + (parseInt(date.getMonth().toString())+1).toString().padStart(2,'0') 
         + "/" + date.getFullYear().toString().padStart(2,'0') + " " + date.getHours().toString().padStart(2,'0') + ":" 
         + date.getMinutes().toString().padStart(2,'0') + ":" + date.getSeconds().toString().padStart(2,'0'),
-        total: this.totalOrder,
+        total: 0,
         isClosed: 'false',
         orderType: this.orderType
       }
@@ -302,17 +318,46 @@ export class NewOrderComponent {
       err =>{alert("Ocurrio un error.");})
   }
 
-  selectClientChange(event:any):void{
-    let selectVal = parseInt(String(event.target.value).substring(3,5));
-    this.clientsData.forEach((client:any) => {
-      if(client.clientNameId == parseInt(String(event.target.value).substring(3,5)) ){
+  getOrderById(orderId: number):void{
+    this.http.get<any>(EndPointConstant.ORDER_ENDPOINT+orderId).subscribe(
+      res => {
+        if(res){
+          this.currentIdOrder = res.orderId;
+          this.startDateOrder = res.startDate;
+          this.endDate = "Pedido en modificación";
+          this.totalOrder = res.total;
+          this.orderType = res.orderType;
+          this.selectLastClientAdded();
+          this.getOrderDetailById();
+          alert("Pedido " + orderId + " fue cargado exitosamente")
+        }
+
         
-        this.currentClientId = client.clientNameId;
-        this.currentClientName = client.clientName;
-        this.selectedClientValue = selectVal;
-        document.getElementById("currentClientName")?.setAttribute("value", this.currentClientName);
-      }
-    })
+      }, 
+      err =>{alert("Ocurrio un error.");})
+  }
+
+
+  selectClientChange(event:any):void{
+    let value = String(event.target.value).trim();
+    let startIndex = value.indexOf(":");
+    let length = value.length;
+
+    let selectVal = parseInt(value.substring(startIndex+1,length));
+
+    console.log(value,startIndex,length, selectVal);
+    if(startIndex > -1 && value && value != ""){
+      this.clientsData.forEach((client:any) => {
+        if(client.clientNameId == selectVal) {
+          
+          this.currentClientId = client.clientNameId;
+          this.currentClientName = client.clientName;
+          this.selectedClientValue = selectVal;
+          document.getElementById("currentClientName")?.setAttribute("value", this.currentClientName);
+        }
+      })
+    }
+    
   }
 
   
@@ -359,7 +404,12 @@ export class NewOrderComponent {
     this.http.patch<any>(EndPointConstant.ORDER_ENDPOINT, order).subscribe(res => {
       
       if(close){
-        this.saveNewOrder(true);
+        if(this.selectedOrderId == 0){
+          this.saveNewOrder(true);
+        }else{
+          alert("Pedido Cerrado")
+        }
+        
       }else{
         
         alert("Se guardo correctamente");

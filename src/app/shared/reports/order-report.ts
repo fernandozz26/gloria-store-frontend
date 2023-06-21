@@ -22,7 +22,7 @@ export class OrderReports{
 
         let report: string = 
         '<body style="width: 90%; margin: 0 auto; margin-top: 20px;">'+
-        '<table class="table  w-100 table-borderless">'+
+        '<table class="table  w-100 table-borderless" style="width:100%" >'+
                 '<thead>'+
                     '<tr>'+
                         '<th>No. Pedido</th>'+
@@ -46,7 +46,7 @@ export class OrderReports{
         '</table>'+
 
 
-        '<table class="table w-100 table-borderless">'+
+        '<table class="table w-100 table-borderless" style="width:100%">'+
         '<thead>'+
             '<th>Cliente</th>'+
             '<th>Pedido</th>'+
@@ -62,7 +62,7 @@ export class OrderReports{
                 '<td style="vertical-align: middle; text-align: center; " class="fs-3">'+client.clientName+'</td>'+
                 '<td colspan="5">'+
                 '<div>'+
-                    '<table class="table table-sm table-striped">'+
+                    '<table class="table table-sm table-striped" style="width:100%">'+
                         '<thead>'+
                             '<tr>'+
                                 '<th>img</th>'+
@@ -100,12 +100,10 @@ export class OrderReports{
                              
                         
                         });
-
-                        console.log(tr)
                         if(total > 0){
-                            let tr3 = '<tr class="table-primary">'+
-                                '<td colspan="3">Total:</td>'+
-                                '<td>'+total+'</td>'+
+                            let tr3 = '<tr class="table-primary" style ="background: #67C4FA">'+
+                                '<td style ="background: #67C4FA" colspan="3">Total:</td>'+
+                                '<td style ="background: #67C4FA">'+total+'</td>'+
                             '</tr>';
                             tr+= tr3;
                         }
