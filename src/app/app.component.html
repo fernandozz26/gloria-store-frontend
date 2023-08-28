@@ -3,13 +3,11 @@
   <div class="search-bar">
       <h2 class="mt-2">Gloria Store</h2>
   </div>
+<app-checker></app-checker>
 
-
-  <mat-tab-group color="primary">
-    <mat-tab label="Buscar Pedido"> <app-find-order></app-find-order></mat-tab>
-    
+  <mat-tab-group color="primary" (selectedTabChange)="tabChanged($event)">
     <mat-tab label="Nuevo Pedido"> <app-new-order></app-new-order> </mat-tab>
-    
+    <mat-tab label="Buscar Pedido" > <app-find-order></app-find-order></mat-tab>
     <mat-tab label="Otros Proveedores"> Content 3 </mat-tab>
   </mat-tab-group>
   

@@ -70,15 +70,20 @@
                         <td><div class="input-group input-group-sm"><input type="text" disabled class="form-control" [value]="'$ ' + currentProductQuantity * currentProductPrice"></div></td>
                         <td><button mat-mini-fab color="primary" (click)="agregarDetallePedido()" class="m-3"><mat-icon>save</mat-icon></button></td>
                     </tr>
-                    <tr *ngFor="let orderDetail of orderDetailData">
-                        <td width="100px"><div class="input-group input-group-sm"><input type="text" class="form-control" disabled [value]="orderDetail.orderDetailId"></div></td>
-                        <td><img [src]="base64ToImg(orderDetail.img)" [alt]="orderDetail.img ? '' : 'Sin contenido'" width="75" height="75" class="mini-picture"></td>
-                        <td><div class="input-group input-group-sm"><input type="text" class="form-control" [value]="getClienNameById(orderDetail.clientNameId)" disabled></div></td>
-                        <td><div class="input-group input-group-sm"><input type="number" class="form-control" min="1" (keypress)="onlyNumbers($event)" min="1" [(ngModel)]="orderDetail.productQuantity"></div></td>
-                        <td><div class="input-group input-group-sm"><input type="text" class="form-control" (keypress)="decimalNumbers($event)" [(ngModel)]="orderDetail.productPrice"></div></td>
-                        <td><div class="input-group input-group-sm"><input type="text" class="form-control" disabled [value]=" '$ ' + orderDetail.productPrice * orderDetail.productQuantity"></div></td>
-                        <td><button mat-mini-fab color="secondary" (click)="updateOrderDetail(orderDetail)" class="m-3"><mat-icon>edit</mat-icon></button></td>
-                        <td><button mat-mini-fab color="warn" (click)="deleteOrderDetail(orderDetail.orderDetailId)"><mat-icon>delete</mat-icon></button></td>
+                    <tr *ngFor="let orderDetail of orderDetailData" >
+                        <td  [style]="{background:rowColor(orderDetail.statusColor)}" width="100px"><div class="input-group input-group-sm"><input type="text" class="form-control" disabled [value]="orderDetail.orderDetailId"></div></td>
+                        <td [style]="{background:rowColor(orderDetail.statusColor)}"><img [src]="base64ToImg(orderDetail.img)" [alt]="orderDetail.img ? '' : 'Sin contenido'" width="75" height="75" class="mini-picture"></td>
+                        <td [style]="{background:rowColor(orderDetail.statusColor)}"><div class="input-group input-group-sm"><input type="text" class="form-control" [value]="getClienNameById(orderDetail.clientNameId)" disabled></div></td>
+                        <td [style]="{background:rowColor(orderDetail.statusColor)}"><div class="input-group input-group-sm"><input type="number" class="form-control" min="1" (keypress)="onlyNumbers($event)" min="1" [(ngModel)]="orderDetail.productQuantity"></div></td>
+                        <td [style]="{background:rowColor(orderDetail.statusColor)}"><div class="input-group input-group-sm"><input type="text" class="form-control" (keypress)="decimalNumbers($event)" [(ngModel)]="orderDetail.productPrice"></div></td>
+                        <td [style]="{background:rowColor(orderDetail.statusColor)}"><div class="input-group input-group-sm"><input type="text" class="form-control" disabled [value]=" '$ ' + orderDetail.productPrice * orderDetail.productQuantity"></div></td>
+                        <td [style]="{background:rowColor(orderDetail.statusColor)}"><button mat-mini-fab color="secondary" (click)="updateOrderDetail(orderDetail)" class="m-3 bg-light"><mat-icon>edit</mat-icon></button></td>
+                        <td [style]="{background:rowColor(orderDetail.statusColor)}"><button mat-mini-fab color="" style="background-color: rgb(0, 141, 0);" 
+                            (click)="addCheckerItem(orderDetail)">
+                            <mat-icon>plus_one</mat-icon></button></td>
+                        <td [style]="{background:rowColor(orderDetail.statusColor)}">    
+                            <button mat-mini-fab class="ms-1 me-1" color="primary" (click)="deliverOrderDetail(orderDetail)" *ngIf="deliveryButtonHandler(orderDetail.statusColor)"><mat-icon>local_shipping</mat-icon></button> </td>
+                        <td [style]="{background:rowColor(orderDetail.statusColor)}"><button mat-mini-fab color="warn" class="ms-3" (click)="deleteOrderDetail(orderDetail.orderDetailId)"><mat-icon>delete</mat-icon></button></td>
                     </tr>
                 </tbody>
             </table>

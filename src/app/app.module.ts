@@ -15,23 +15,27 @@ import {MatIconModule} from '@angular/material/icon'
 import {MatTabsModule} from '@angular/material/tabs'
 import {MatAutocompleteModule} from '@angular/material/autocomplete'
 import { HttpClientModule } from '@angular/common/http';
+import {MatCardModule} from '@angular/material/card'
 // componentes
 import { NewOrderComponent } from './component/ui/new-order/new-order.component';
 import { FindOrderComponent } from './component/ui/find-order/find-order.component'
 //Interceptores
-import {intercetorProvider} from './shared/interceptors/order-interceptor.service'
+import {intercetorProvider} from './shared/interceptors/order-interceptor.service';
+import { CheckerComponent } from './component/ui/checker/checker.component'
 
 @NgModule({
   declarations: [
     AppComponent,
     NewOrderComponent,
-    FindOrderComponent
+    FindOrderComponent,
+    CheckerComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
     MatRadioModule,MatButtonModule,MatFormFieldModule,MatInputModule,MatCheckboxModule,MatIconModule,MatTabsModule,MatAutocompleteModule,
+    MatCardModule,
     FormsModule, ReactiveFormsModule,
     HttpClientModule
     

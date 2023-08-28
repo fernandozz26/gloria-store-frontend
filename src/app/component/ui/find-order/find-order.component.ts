@@ -1,11 +1,12 @@
-import { Component } from '@angular/core';
-import { Order, OrderDetail } from '../../classes/pedido.class';
 import { HttpClient } from '@angular/common/http';
-import {EndPointConstant} from '../../../constants/constants'
-import { ClientName } from '../../classes/client.class';
+import { Component } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
-import { OrderReports } from 'src/app/shared/reports/order-report';
+import { MainViewService } from 'src/app/services/main.view.serive';
 import { OrderService } from 'src/app/services/order.service';
+import { OrderReports } from 'src/app/shared/reports/order-report';
+import { EndPointConstant } from '../../../constants/constants';
+import { ClientName } from '../../classes/client.class';
+import { Order, OrderDetail } from '../../classes/pedido.class';
 @Component({
   selector: 'app-find-order',
   templateUrl: './find-order.component.html',
@@ -18,16 +19,28 @@ export class FindOrderComponent {
   orderData: Order[] = [];
   selectedOrderId: number = 0;
 
-  constructor(private http: HttpClient,private _sanitizer: DomSanitizer, private readonly orderSvc: OrderService){}
+  constructor(private http: HttpClient,private _sanitizer: DomSanitizer, private readonly orderSvc: OrderService, 
+    private readonly mainViewSvc: MainViewService){}
   
   ngOnInit():void{
 
-    this.orderSvc.orderId$.subscribe(orderId => {this.selectedOrderId = orderId})
-    this.http.get<Order[]>(EndPointConstant.ORDER_ENDPOINT+"all").subscribe(
-      res => {
-        this.orderData = res;
-      }, err => {}
-      );
+    this.orderSvc.orderId$.subscribe(orderId => {this.selectedOrderId = orderId});
+    this.mainViewSvc.checkFindOrder$.subscribe((status:Boolean) => {
+      if(status){
+        this.http.get<Order[]>(EndPointConstant.ORDER_ENDPOINT+"all").subscribe(
+          res => {
+            this.orderData = res;
+          }, err => {
+            
+          }
+          );
+
+          this.mainViewSvc.setFindOrderChecker(false);
+      }
+    }, err => {})
+    
+
+      
   }
 
 

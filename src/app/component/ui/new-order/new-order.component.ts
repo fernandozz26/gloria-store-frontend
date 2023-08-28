@@ -1,10 +1,11 @@
-import { Component } from '@angular/core';
-import {Order, OrderDetail} from '../../classes/pedido.class';
-import { DomSanitizer } from '@angular/platform-browser';
-import {HostListener} from '@angular/core'
-import {EndPointConstant} from '../../../constants/constants'
 import { HttpClient } from '@angular/common/http';
+import { Component, HostListener } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
+import { CheckerService } from 'src/app/services/checker.service';
 import { OrderService } from 'src/app/services/order.service';
+import { EndPointConstant, GlobalConstants } from '../../../constants/constants';
+import { Order, OrderDetail } from '../../classes/pedido.class';
+
 @Component({
   selector: 'app-new-order',
   templateUrl: './new-order.component.html',
@@ -40,19 +41,20 @@ export class NewOrderComponent {
   orderData:any= [];
   clienIdData = [];
   orderDetailData: OrderDetail[] = [];
-
+  orderClients: OrderDetail[] = [];
+  totalChecker: number = 0;
   // servicios observables
   selectedOrderId: number = 0;
   //orderId$ = this.orderSvc.selectedOrder$;
 
-  constructor(private _sanitizer: DomSanitizer, private http: HttpClient,private readonly orderSvc: OrderService){}
+  constructor(private _sanitizer: DomSanitizer, private http: HttpClient,
+    private readonly orderSvc: OrderService, private readonly checkerSvc: CheckerService){}
 
   ngOnInit():void{
     
     let date = new Date();
     this.startDateOrder = date.getDate().toString().padStart(2,'0') + "/" + (parseInt(date.getMonth().toString())+1).toString().padStart(2,'0') + "/" + date.getFullYear().toString().padStart(2,'0');
     this.endDate = this.startDateOrder + " " + date.getHours().toString().padStart(2,'0') + ":" + date.getMinutes().toString().padStart(2,'0') + ":" + date.getSeconds().toString().padStart(2,'0');
-  
     if(this.selectedOrderId == 0){
       this.getLastUnclosedOrder();
     }
@@ -64,7 +66,16 @@ export class NewOrderComponent {
         this.getOrderById(this.selectedOrderId);
       }
     })
+
+    this.checkerSvc.orders$.subscribe(clients =>{
+      this.orderClients = clients; 
+    } );
     
+    this.checkerSvc.refreshPage$.subscribe(status => {
+      if(status){
+        this.getOrderById(this.currentIdOrder, true);
+      }
+    })
   }
 
   @HostListener('window:paste', ['$event']) 
@@ -145,8 +156,6 @@ export class NewOrderComponent {
     return true;
   }
 
-  
-
   agregarDetallePedido():void{
     if(this.currentIdOrder === 0){
       alert("Debe agregar un cliente primero");
@@ -157,8 +166,8 @@ export class NewOrderComponent {
       this.currentIdOrderDetail++;
       let orderDetail:OrderDetail = new OrderDetail(0, this.currentClientId, this.currentIdOrder,
         this.currentOrderBlobImage, this.currentClientName,this.currentProductQuantity,this.currentProductPrice,
-        this.currentProductQuantity * this.currentProductPrice,);
-      
+        this.currentProductQuantity * this.currentProductPrice, "RED");
+        
       this.http.post<any>(EndPointConstant.ORDER_DETAIL_ENDPOINT, orderDetail).subscribe(
         res => {
           if(res){
@@ -259,6 +268,8 @@ export class NewOrderComponent {
   }
 
   saveNewOrder(force: boolean = false):void{
+    let date = new Date();
+    this.startDateOrder = date.getDate().toString().padStart(2,'0') + "/" + (parseInt(date.getMonth().toString())+1).toString().padStart(2,'0') + "/" + date.getFullYear().toString().padStart(2,'0');
     if(force){
       let date = new Date();
       let data = {
@@ -271,14 +282,17 @@ export class NewOrderComponent {
         isClosed: 'false',
         orderType: this.orderType
       }
-      this.http.post<any>(EndPointConstant.ORDER_ENDPOINT, data).subscribe(res => {
-        alert("Se guardo correctamente");
-        this.getLastUnclosedOrder();
-      }, err => {
-        alert("Ocurrio un error.");
-      })
+
+      if(confirm("Pedido: " +this.currentIdOrder+ " ha sido cerrado \n ¿Desea generar uno nuevo?")){
+        this.http.post<any>(EndPointConstant.ORDER_ENDPOINT, data).subscribe(res => {
+          this.getLastUnclosedOrder();
+        }, err => {
+          alert("Ocurrio un error.");
+        });
+      }
+      
     }
-    else if(confirm("¿Deseas generar una nueva orden? \n \n Se eliminaran todos los datos no guardados")){
+    else if(confirm("¿Deseas generar un nuevo pedido? \n \n Se eliminaran todos los datos no guardados")){
       let date = new Date();
       let data = {
         orderId: 0,
@@ -299,11 +313,11 @@ export class NewOrderComponent {
     }
   }
 
-
   getLastUnclosedOrder():void{
     this.http.get<any>(EndPointConstant.ORDER_ENDPOINT+"last").subscribe(
       res => {
         if(res){
+          console.log();
           this.currentIdOrder = res.orderId;
           this.startDateOrder = res.startDate;
           this.endDate = "Pedido sin cerrar";
@@ -318,7 +332,7 @@ export class NewOrderComponent {
       err =>{alert("Ocurrio un error.");})
   }
 
-  getOrderById(orderId: number):void{
+  getOrderById(orderId: number, refresh:boolean = false):void{
     this.http.get<any>(EndPointConstant.ORDER_ENDPOINT+orderId).subscribe(
       res => {
         if(res){
@@ -329,14 +343,16 @@ export class NewOrderComponent {
           this.orderType = res.orderType;
           this.selectLastClientAdded();
           this.getOrderDetailById();
-          alert("Pedido " + orderId + " fue cargado exitosamente")
+          if(!refresh){
+            alert("Pedido " + orderId + " fue cargado exitosamente")
+          }
+          
         }
 
         
       }, 
       err =>{alert("Ocurrio un error.");})
   }
-
 
   selectClientChange(event:any):void{
     let value = String(event.target.value).trim();
@@ -360,7 +376,6 @@ export class NewOrderComponent {
     
   }
 
-  
   getOrderDetailById(): void{
     this.http.get<any>(EndPointConstant.ORDER_DETAIL_ENDPOINT+"/"+this.currentIdOrder).subscribe(
       res => {
@@ -388,7 +403,6 @@ export class NewOrderComponent {
     return clientName;
   }
 
-
   saveOrderState(close: boolean = false):void{
     let total:number = 0;
     this.orderDetailData.forEach((detail:OrderDetail) =>{
@@ -414,12 +428,11 @@ export class NewOrderComponent {
         
         alert("Se guardo correctamente");
       }
-      this.getLastUnclosedOrder();
+      //this.getLastUnclosedOrder();
     }, err => {
       alert("Ocurrio un error.");
     })
   }
-
 
   deleteOrderDetail(detailId: number): void{
     this.http.delete<any>(EndPointConstant.ORDER_DETAIL_ENDPOINT + "/"+detailId).subscribe(
@@ -431,6 +444,44 @@ export class NewOrderComponent {
       );
   }
   
+
+  addCheckerItem(orderDetail: OrderDetail){
+    
+    this.checkerSvc.addNewClient(orderDetail);
+  }
+
+  rowColor(color:string):string{
+    let rowColor:string  = "";
+    if(color == GlobalConstants.ROW_STATE_UNDELIVERY){
+      rowColor = GlobalConstants.ROW_RED_COLOR;
+    }else if(color == GlobalConstants.ROW_STATE_DELIVERY){
+      rowColor = GlobalConstants.ROW_BLUE_COLOR;
+    }else if(color == GlobalConstants.ROW_STATE_PACKAGED){
+      rowColor = GlobalConstants.ROW_GREEN_COLOR;
+    }else{
+      rowColor = "white"
+    }
+    return rowColor;
+  }
+
+  deliverOrderDetail(order: OrderDetail){
+    let details: OrderDetail[] = [];
+    details.push(order);
+    this.http.patch(EndPointConstant.ORDER_ENDPOINT+"delivery", details).subscribe( 
+      res => {
+        this.checkerSvc.refreshNewOrder();
+      }, 
+      
+      err => {console.log("error ", err)});
+  }
+  deliveryButtonHandler(color:string): boolean{
+    if(color == GlobalConstants.ROW_STATE_PACKAGED){
+      return true;
+    }
+
+    return false;
+
+  }
 }
 
 

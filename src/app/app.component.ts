@@ -1,4 +1,6 @@
-import { Component, NgModule } from '@angular/core';
+import { Component } from '@angular/core';
+import { MatTabChangeEvent } from '@angular/material/tabs';
+import { MainViewService } from './services/main.view.serive';
 
 
 
@@ -12,7 +14,7 @@ import { Component, NgModule } from '@angular/core';
 export class AppComponent {
   title = 'Floris loquisss';
 
-  constructor(){
+  constructor(private readonly mainViewSvc: MainViewService){
 
   }
 
@@ -49,7 +51,15 @@ export class AppComponent {
 
   ngOnInit():void{
     window.addEventListener("paste",this.copiar);
-
     
+    
+  }
+
+
+  tabChanged(event: MatTabChangeEvent):void{
+    if(event.tab.textLabel == "Buscar Pedido"){
+      
+      this.mainViewSvc.setFindOrderChecker(true);
+    }
   }
 }
