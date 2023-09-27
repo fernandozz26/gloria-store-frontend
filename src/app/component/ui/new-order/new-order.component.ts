@@ -5,6 +5,7 @@ import { CheckerService } from 'src/app/services/checker.service';
 import { OrderService } from 'src/app/services/order.service';
 import { EndPointConstant, GlobalConstants } from '../../../constants/constants';
 import { Order, OrderDetail } from '../../classes/pedido.class';
+import { SpinnerService } from 'src/app/services/spinner.service';
 
 @Component({
   selector: 'app-new-order',
@@ -47,8 +48,15 @@ export class NewOrderComponent {
   selectedOrderId: number = 0;
   //orderId$ = this.orderSvc.selectedOrder$;
 
+  //product description
+  showDescription:boolean = false;
+  showSize:boolean = false;
+  productDescription:string = "";
+  productSize:string = "";
+
   constructor(private _sanitizer: DomSanitizer, private http: HttpClient,
-    private readonly orderSvc: OrderService, private readonly checkerSvc: CheckerService){}
+    private readonly orderSvc: OrderService, private readonly checkerSvc: CheckerService,
+    private readonly spinnerSvc:SpinnerService){}
 
   ngOnInit():void{
     
@@ -76,6 +84,7 @@ export class NewOrderComponent {
         this.getOrderById(this.currentIdOrder, true);
       }
     })
+    
   }
 
   @HostListener('window:paste', ['$event']) 
@@ -166,8 +175,8 @@ export class NewOrderComponent {
       this.currentIdOrderDetail++;
       let orderDetail:OrderDetail = new OrderDetail(0, this.currentClientId, this.currentIdOrder,
         this.currentOrderBlobImage, this.currentClientName,this.currentProductQuantity,this.currentProductPrice,
-        this.currentProductQuantity * this.currentProductPrice, "RED");
-        
+        this.currentProductQuantity * this.currentProductPrice, "RED", this.productDescription, this.productSize);
+      this.spinnerSvc.setSpinnerValue(true);
       this.http.post<any>(EndPointConstant.ORDER_DETAIL_ENDPOINT, orderDetail).subscribe(
         res => {
           if(res){
@@ -177,9 +186,10 @@ export class NewOrderComponent {
             this.currentProductPrice = 0;
             //this.orderDetailData.push(orderDetail);
             this.getLastUnclosedOrder();
+            this.spinnerSvc.setSpinnerValue(false);
           }
         },
-        err => {}
+        err => {this.spinnerSvc.setSpinnerValue(false);}
       );
       
 
@@ -213,11 +223,13 @@ export class NewOrderComponent {
           });
         }
         if(clientExist === false){
-
+          this.spinnerSvc.setSpinnerValue(true);
           this.http.post<any>(EndPointConstant.CLIENT_ENDPOINT, data).subscribe(res => {
             this.selectLastClientAdded();
+            this.spinnerSvc.setSpinnerValue(false);
           }, err => {
             alert("Ocurrio un error al guardar cliente");
+            this.spinnerSvc.setSpinnerValue(false);
           });
         }else{
           alert("Este cliente ya ha sido agregado, intente con otro nombre")
@@ -229,6 +241,7 @@ export class NewOrderComponent {
   }
 
   selectLastClientAdded():void{
+   
     this.http.get<any>(EndPointConstant.CLIENT_ENDPOINT+this.currentIdOrder).subscribe(
       res => {
         if(res){
@@ -242,19 +255,22 @@ export class NewOrderComponent {
           }
         }
       },
-      err => {alert("Ocurrio un error al cargar los clientes");}
+      err => {alert("Ocurrio un error al cargar los clientes");this.spinnerSvc.setSpinnerValue(false);}
     );
   }
 
   updateOrderDetail(orderDetail: OrderDetail):void{
     if(this.orderDetailData.length > 0 && orderDetail){
       orderDetail.subtotal = orderDetail.productPrice * orderDetail.productQuantity;
+      this.spinnerSvc.setSpinnerValue(true);
       this.http.patch<any>(EndPointConstant.ORDER_DETAIL_ENDPOINT, orderDetail).subscribe(res => {
         
         this.getLastUnclosedOrder();
         alert("Detalle actualizado");
+        this.spinnerSvc.setSpinnerValue(false);
       }, err => {
         alert("Ocurrio un error.");
+        this.spinnerSvc.setSpinnerValue(false);
       });
       /*
       this.orderDetailData.forEach((detail:OrderDetail) =>{
@@ -284,10 +300,13 @@ export class NewOrderComponent {
       }
 
       if(confirm("Pedido: " +this.currentIdOrder+ " ha sido cerrado \n ¿Desea generar uno nuevo?")){
+        this.spinnerSvc.setSpinnerValue(true);
         this.http.post<any>(EndPointConstant.ORDER_ENDPOINT, data).subscribe(res => {
           this.getLastUnclosedOrder();
+          this.spinnerSvc.setSpinnerValue(false);
         }, err => {
           alert("Ocurrio un error.");
+          this.spinnerSvc.setSpinnerValue(false);
         });
       }
       
@@ -304,20 +323,23 @@ export class NewOrderComponent {
         isClosed: 'false',
         orderType: this.orderType
       }
+      this.spinnerSvc.setSpinnerValue(true);
       this.http.post<any>(EndPointConstant.ORDER_ENDPOINT, data).subscribe(res => {
         alert("Se guardo correctamente");
         this.getLastUnclosedOrder();
+        this.spinnerSvc.setSpinnerValue(false);
       }, err => {
         alert("Ocurrio un error.");
+        this.spinnerSvc.setSpinnerValue(false);
       })
     }
   }
 
   getLastUnclosedOrder():void{
+    this.spinnerSvc.setSpinnerValue(true);
     this.http.get<any>(EndPointConstant.ORDER_ENDPOINT+"last").subscribe(
       res => {
         if(res){
-          console.log();
           this.currentIdOrder = res.orderId;
           this.startDateOrder = res.startDate;
           this.endDate = "Pedido sin cerrar";
@@ -327,12 +349,15 @@ export class NewOrderComponent {
           this.getOrderDetailById();
         }
 
-        
       }, 
-      err =>{alert("Ocurrio un error.");})
+      err =>{
+        alert("Ocurrio un error.");
+        this.spinnerSvc.setSpinnerValue(false);
+    })
   }
 
   getOrderById(orderId: number, refresh:boolean = false):void{
+    this.spinnerSvc.setSpinnerValue(true);
     this.http.get<any>(EndPointConstant.ORDER_ENDPOINT+orderId).subscribe(
       res => {
         if(res){
@@ -348,10 +373,10 @@ export class NewOrderComponent {
           }
           
         }
-
-        
       }, 
-      err =>{alert("Ocurrio un error.");})
+      err =>{
+        alert("Ocurrio un error.");
+        this.spinnerSvc.setSpinnerValue(false);})
   }
 
   selectClientChange(event:any):void{
@@ -377,17 +402,23 @@ export class NewOrderComponent {
   }
 
   getOrderDetailById(): void{
+    this.spinnerSvc.setSpinnerValue(true);
     this.http.get<any>(EndPointConstant.ORDER_DETAIL_ENDPOINT+"/"+this.currentIdOrder).subscribe(
       res => {
         if(res){
+          
           this.orderDetailData = res;
           this.totalOrder = 0;
           this.orderDetailData.forEach(detail => {
             this.totalOrder += (detail.productPrice * detail.productQuantity) ? (detail.productPrice * detail.productQuantity) : 0;
           })
         }
+        this.spinnerSvc.setSpinnerValue(false);
       },
-      err => {}
+      err => {
+
+        this.spinnerSvc.setSpinnerValue(false);
+      }
     );
   }
 
@@ -414,7 +445,7 @@ export class NewOrderComponent {
     + date.getMinutes().toString().padStart(2,'0') + ":" + date.getSeconds().toString().padStart(2,'0');
     
     let order:Order = {orderId: this.currentIdOrder, total: total, startDate: this.startDateOrder, orderType: this.orderType, endDate: this.endDate, isClosed: String(close)}
-
+    this.spinnerSvc.setSpinnerValue(true);
     this.http.patch<any>(EndPointConstant.ORDER_ENDPOINT, order).subscribe(res => {
       
       if(close){
@@ -428,19 +459,26 @@ export class NewOrderComponent {
         
         alert("Se guardo correctamente");
       }
+      this.spinnerSvc.setSpinnerValue(false);
       //this.getLastUnclosedOrder();
     }, err => {
       alert("Ocurrio un error.");
+      this.spinnerSvc.setSpinnerValue(false);
     })
   }
 
   deleteOrderDetail(detailId: number): void{
+    this.spinnerSvc.setSpinnerValue(true);
     this.http.delete<any>(EndPointConstant.ORDER_DETAIL_ENDPOINT + "/"+detailId).subscribe(
       res => {
         this.getLastUnclosedOrder();
         console.log("Detalle eliminado")
+        this.spinnerSvc.setSpinnerValue(false);
       },
-      err => {}
+      err => 
+      {
+        this.spinnerSvc.setSpinnerValue(false);
+      }
       );
   }
   
@@ -467,12 +505,17 @@ export class NewOrderComponent {
   deliverOrderDetail(order: OrderDetail){
     let details: OrderDetail[] = [];
     details.push(order);
+    this.spinnerSvc.setSpinnerValue(true);
     this.http.patch(EndPointConstant.ORDER_ENDPOINT+"delivery", details).subscribe( 
       res => {
         this.checkerSvc.refreshNewOrder();
+        this.spinnerSvc.setSpinnerValue(false);
       }, 
       
-      err => {console.log("error ", err)});
+      err => {
+        console.log("error ", err);
+        this.spinnerSvc.setSpinnerValue(false);
+      });
   }
   deliveryButtonHandler(color:string): boolean{
     if(color == GlobalConstants.ROW_STATE_PACKAGED){
@@ -482,6 +525,15 @@ export class NewOrderComponent {
     return false;
 
   }
+
+  showSizeHandler():void{
+    this.showSize = !this.showSize;
+  }
+
+  showDescriptionHandler():void{
+    this.showDescription = !this.showDescription;
+  }
+
 }
 
 

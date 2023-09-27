@@ -1,10 +1,10 @@
 <div class="full-screen-component">
 
-    <div class="component-full-with-centered">
-        <div class="w-100">
+    <div class="component-full-with-centered hidden-scroll">
+        <div class="w-100 hidden-scroll">
             <h2>Generar nuevo pedido</h2>
 
-            <table class="w-100">
+            <table class="w-100 hidden-scroll">
                 <thead>
                     <tr style="text-align: center;">
                         <th>No. Pedido</th>
@@ -44,8 +44,11 @@
                         
                       </select>
 
+                      
+
                 </div>
-                
+                      <mat-checkbox (change)="showSizeHandler()" [checked]="showSize">Talla</mat-checkbox>
+                      <mat-checkbox (change)="showDescriptionHandler()" [checked]="showDescription">Descripcion</mat-checkbox>
                 
                 
             </div>
@@ -54,7 +57,9 @@
                 <thead style="text-align: center;">
                     <th>Id</th>
                     <th>Image</th>
-                    <th>Nombre</th>
+                    <th style="min-width: 190px;">Nombre</th>
+                    <th>Talla/Tamaño</th>
+                    <th>Descripcion</th>
                     <th>Cantidad</th>
                     <th>Precio unitario</th>
                     <th>Total</th>
@@ -65,15 +70,24 @@
                         <td width="30px" height="100px"></td>
                         <td><img src=""  width="75" height="75" class="mini-picture" id="imgOrderDetail" (click)="imgClick()"></td>
                         <td><div class="input-group input-group-sm"><input type="text" disabled class="form-control" [value]="currentClientName"></div></td>
+                        <!-- product detail-->
+                        <td><div class="input-group input-group-sm ms-3" *ngIf="showSize"><input type="text" class="form-control" [(ngModel)]="productSize" style="max-width: 60px;"></div> </td>
+                        <td><div class="input-group input-group-sm" *ngIf="showDescription"><input type="text" class="form-control" [(ngModel)]="productDescription" ></div> </td>
+
                         <td><div class="input-group input-group-sm"><input type="number" class="form-control" min="1" (keypress)="onlyNumbers($event)" min="1" [(ngModel)]="currentProductQuantity"></div></td>
                         <td><div class="input-group input-group-sm"><input type="text" class="form-control" (keypress)="decimalNumbers($event)" [(ngModel)]="currentProductPrice"></div></td>
                         <td><div class="input-group input-group-sm"><input type="text" disabled class="form-control" [value]="'$ ' + currentProductQuantity * currentProductPrice"></div></td>
                         <td><button mat-mini-fab color="primary" (click)="agregarDetallePedido()" class="m-3"><mat-icon>save</mat-icon></button></td>
                     </tr>
                     <tr *ngFor="let orderDetail of orderDetailData" >
-                        <td  [style]="{background:rowColor(orderDetail.statusColor)}" width="100px"><div class="input-group input-group-sm"><input type="text" class="form-control" disabled [value]="orderDetail.orderDetailId"></div></td>
+                        <td [style]="{background:rowColor(orderDetail.statusColor)}" width="100px"><div class="input-group input-group-sm"><input type="text" class="form-control" disabled [value]="orderDetail.orderDetailId"></div></td>
                         <td [style]="{background:rowColor(orderDetail.statusColor)}"><img [src]="base64ToImg(orderDetail.img)" [alt]="orderDetail.img ? '' : 'Sin contenido'" width="75" height="75" class="mini-picture"></td>
                         <td [style]="{background:rowColor(orderDetail.statusColor)}"><div class="input-group input-group-sm"><input type="text" class="form-control" [value]="getClienNameById(orderDetail.clientNameId)" disabled></div></td>
+                        <!-- product detail-->
+    
+                        <td [style]="{background:rowColor(orderDetail.statusColor)}"><div class="input-group input-group-sm ms-3" *ngIf="orderDetail.size !== null && orderDetail.size !== ''"> <input type="text" class="form-control" style="max-width: 60px;" [(ngModel)]="orderDetail.size"></div> </td>
+                        <td [style]="{background:rowColor(orderDetail.statusColor)}"><div class="input-group input-group-sm" *ngIf="orderDetail.description && orderDetail.description !== ''"> <input type="text" class="form-control" [(ngModel)]="orderDetail.description"></div> </td>
+
                         <td [style]="{background:rowColor(orderDetail.statusColor)}"><div class="input-group input-group-sm"><input type="number" class="form-control" min="1" (keypress)="onlyNumbers($event)" min="1" [(ngModel)]="orderDetail.productQuantity"></div></td>
                         <td [style]="{background:rowColor(orderDetail.statusColor)}"><div class="input-group input-group-sm"><input type="text" class="form-control" (keypress)="decimalNumbers($event)" [(ngModel)]="orderDetail.productPrice"></div></td>
                         <td [style]="{background:rowColor(orderDetail.statusColor)}"><div class="input-group input-group-sm"><input type="text" class="form-control" disabled [value]=" '$ ' + orderDetail.productPrice * orderDetail.productQuantity"></div></td>

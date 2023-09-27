@@ -11,8 +11,13 @@ export class OrderDetail{
     // checker visible default tru
     visible: boolean = true;
 
+    //description
+    description!: string;
+    size!: string;
+
     constructor(orderDetailId:number, clientId: number,id: number,oImage:string | ArrayBuffer | null,
-        ocName:string, oQuantity: number, opPrice: number, opTotal: number, statusColor: string){
+        ocName:string, oQuantity: number, opPrice: number, opTotal: number, statusColor: string,
+        description:string, size:string){
         this.orderDetailId = orderDetailId;
         this.clientNameId = clientId;
         this.orderId = id;
@@ -22,6 +27,8 @@ export class OrderDetail{
         this.productPrice = opPrice;
         this.subtotal = opTotal;
         this.statusColor = statusColor;
+        this.description = description;
+        this.size = size;
     }
 }
 
