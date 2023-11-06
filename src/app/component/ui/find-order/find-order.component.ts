@@ -4,9 +4,9 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { MainViewService } from 'src/app/services/main.view.serive';
 import { OrderService } from 'src/app/services/order.service';
 import { OrderReports } from 'src/app/shared/reports/order-report';
-import { EndPointConstant } from '../../../constants/constants';
-import { ClientName } from '../../classes/client.class';
-import { Order, OrderDetail } from '../../classes/pedido.class';
+import { EndPointConstant } from '../../../shared/constants/constants';
+import { ClientName } from '../../../shared/classes/client.class';
+import { Order, OrderDetail } from '../../../shared/classes/pedido.class';
 import { SpinnerService } from 'src/app/services/spinner.service';
 @Component({
   selector: 'app-find-order',

@@ -1,11 +1,16 @@
-
-
 <div class="content">
 
-  <div class="search-bar">
+  <div class="d-block" style="position: fixed; z-index: 100; width: 100%;">
+    <div class="search-bar">
       <h2 class="mt-2">Gloria Store</h2>
+    </div>
+    <app-checker></app-checker>
   </div>
 
-  <router-outlet></router-outlet>
-  
+
+  <div class="pages">
+    <router-outlet></router-outlet>
+  </div>
+
+
 </div>

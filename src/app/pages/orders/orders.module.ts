@@ -15,16 +15,18 @@ import { NewOrderComponent } from 'src/app/component/ui/new-order/new-order.comp
 import { FindOrderComponent } from 'src/app/component/ui/find-order/find-order.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms'
 import { SpinnerModule } from 'src/app/component/ui/spinner/spinner.module';
-
+import { TestPageModule } from '../test-page/test-page.module';
+import { CheckerModule } from 'src/app/component/ui/checker/checker.modulo';
+import { MosaicoModule } from 'src/app/component/ui/mosaico/mosaico.module';
 @NgModule({
   declarations: [
-    OrdersComponent, CheckerComponent, NewOrderComponent, FindOrderComponent
+    OrdersComponent, NewOrderComponent, FindOrderComponent
   ],
   imports: [
     CommonModule,
     FormsModule, ReactiveFormsModule,
     MatRadioModule,MatButtonModule,MatFormFieldModule,MatInputModule,MatCheckboxModule,MatIconModule,MatTabsModule,MatAutocompleteModule,
-    MatCardModule, SpinnerModule
+    MatCardModule, SpinnerModule, CheckerModule, MosaicoModule
   ]
 })
 export class OrdersModule { }

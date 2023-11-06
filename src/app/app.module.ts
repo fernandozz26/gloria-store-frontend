@@ -10,10 +10,14 @@ import { HttpClientModule } from '@angular/common/http';
 
 //Interceptores
 import {intercetorProvider} from './shared/interceptors/order-interceptor.service';
+
+// PAGE MODULES
 import { TestPageModule } from './pages/test-page/test-page.module';
 import { OrdersModule } from './pages/orders/orders.module';
 import { HashLocationStrategy, LocationStrategy } from '@angular/common';
-
+import { CheckerModule } from './component/ui/checker/checker.modulo';
+import { FormsModule } from '@angular/forms';
+import { MosaicoModule } from './component/ui/mosaico/mosaico.module';
 @NgModule({
   declarations: [
     AppComponent,
@@ -21,8 +25,8 @@ import { HashLocationStrategy, LocationStrategy } from '@angular/common';
   imports: [
     BrowserModule,
     AppRoutingModule,
-    BrowserAnimationsModule,
-    HttpClientModule, TestPageModule, OrdersModule
+    BrowserAnimationsModule,FormsModule,
+    HttpClientModule, OrdersModule, TestPageModule, CheckerModule, MosaicoModule
     
   ],
 

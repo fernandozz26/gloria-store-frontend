@@ -3,8 +3,8 @@ import { Component, HostListener } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { CheckerService } from 'src/app/services/checker.service';
 import { OrderService } from 'src/app/services/order.service';
-import { EndPointConstant, GlobalConstants } from '../../../constants/constants';
-import { Order, OrderDetail } from '../../classes/pedido.class';
+import { EndPointConstant, GlobalConstants } from '../../../shared/constants/constants';
+import { Order, OrderDetail } from '../../../shared/classes/pedido.class';
 import { SpinnerService } from 'src/app/services/spinner.service';
 
 @Component({
@@ -371,6 +371,13 @@ export class NewOrderComponent {
           if(!refresh){
             alert("Pedido " + orderId + " fue cargado exitosamente")
           }
+
+          let divss = document.getElementsByClassName("mat-mdc-tab-body-content");
+          if(divss != null){
+            for(var i= 0; i < divss.length; i++){
+              divss[i].setAttribute("style", "height: auto");
+            }
+          }
           
         }
       }, 
@@ -484,7 +491,6 @@ export class NewOrderComponent {
   
 
   addCheckerItem(orderDetail: OrderDetail){
-    
     this.checkerSvc.addNewClient(orderDetail);
   }
 
