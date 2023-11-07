@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { MatTabChangeEvent } from '@angular/material/tabs';
-import { MainViewService } from '../../services/main.view.serive';
+import { MainViewService } from '../../services/main.view.service';
 import { SpinnerService } from 'src/app/services/spinner.service';
 
 @Component({

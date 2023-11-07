@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
-import { MainViewService } from 'src/app/services/main.view.serive';
+import { MainViewService } from 'src/app/services/main.view.service';
 import { OrderService } from 'src/app/services/order.service';
 import { OrderReports } from 'src/app/shared/reports/order-report';
 import { EndPointConstant } from '../../../shared/constants/constants';

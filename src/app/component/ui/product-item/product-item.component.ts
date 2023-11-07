@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { CheckerService } from 'src/app/services/checker.service';
-import { OrderDetailWName } from 'src/app/shared/classes/pedido.class';
+import { OrderDetail, OrderDetailWName } from 'src/app/shared/classes/pedido.class';
 
 @Component({
   selector: 'app-product-item',
@@ -17,10 +17,14 @@ export class ProductItemComponent {
   price!:number|null;
   quantity!:number|null;
   subtotal!:number|null;
+  productId!:number;
 
   @Input() detail!: OrderDetailWName;
 
   check = false;
+
+  orders: OrderDetail[] = [];
+
   constructor(private readonly checkerSvc: CheckerService){}
 
   ngOnInit():void{
@@ -34,17 +38,38 @@ export class ProductItemComponent {
       this.quantity = this.detail.productQuantity;
       this.subtotal = this.detail.subtotal;
       this.clientNameId = this.detail.clientNameId;
+      this.productId = this.detail.orderDetailId;
     }
+
+    this.checkerSvc.orders$.subscribe(ordersDetail => {
+        let isPresent: boolean = false;
+        ordersDetail.forEach(details => {
+          if(this.orderId == details.orderId 
+            && this.productId == details.orderDetailId
+            // maxima comprobacion para estar 100% seguro es el mismo producto
+            && this.clientNameId == details.clientNameId
+            ){
+              isPresent = true;
+            }
+        })
+
+        if(this.check == false && isPresent){
+          this.check = true;
+        }else if(this.check == true && isPresent == false){
+          this.check = false;
+        }
+    })
   }
 
   addOrRemoveItem():void{
 
     if(this.check){
       this.checkerSvc.deleteProductFromChecker(this.orderId, this.clientNameId);
+      this.check = false;
     }else{
       this.checkerSvc.addNewClientWName(this.detail);
+      this.check = true;
     }
-    this.check = !this.check;
     
   }
 }

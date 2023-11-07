@@ -4,14 +4,21 @@
             <mat-card-actions>
                 <div class="grid-auto-rows">
 
-                    <div *ngFor="let client of clients" class="d-flex"
-                        (click)="deleteUserFromChecker(client.orderId, client.clientNameId)">
-                        <button (mouseenter)="deleteUserFromCheckerOver(client.orderId + '' + client.clientNameId)"
-                            (mouseleave)="deleteUserFromCheckerLeave(client.orderId + '' + client.clientNameId)"
-                            class="mt-1 me-4" class="d-flex" mat-button>{{"P"+client.orderId + " - " + client.clientName
-                            + " - $ " + client.subtotal}} </button>
-                        <mat-icon [id]="'checkerNameCleanerBtn' + client.orderId + '' + client.clientNameId"
-                            style="display: none;" class="mt-1">clear</mat-icon>
+                    <div *ngFor="let client of clients" class="d-flex" (click)="deleteUserFromChecker(client.orderId, client.clientNameId)">
+
+                        <button (mouseenter)="deleteUserFromCheckerOver(client.orderId + '' + client.productId)"
+                            (mouseleave)="deleteUserFromCheckerLeave(client.orderId + '' + client.productId)"
+                            class="mt-1 me-2 d-flex" mat-button>
+
+                                {{"P"+client.orderId + " - " + client.clientName
+                                + " - $ " + client.subtotal}}
+                   
+                        </button>
+
+                        <label class="mt-2" style="visibility: hidden;" [id]="'checkerNameCleanerBtn' + client.orderId + '' + client.productId">
+                            <mat-icon class="d-flex">clear</mat-icon>
+                        </label>
+                        
                     </div>
                 </div>
             </mat-card-actions>
