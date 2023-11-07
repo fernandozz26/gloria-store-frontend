@@ -1,1 +1,1 @@
- ng build --base-href=/{gloria-store-frontend}/
+ ng build --base-href=/{gloria-store-frontend}

@@ -1,10 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
-import { EndPointConstant } from 'src/app/constants/constants';
+import { EndPointConstant } from 'src/app/shared/constants/constants';
 import { CheckerService } from 'src/app/services/checker.service';
-import { CheckerClient } from '../../classes/checker.client.class';
-import { ClientName } from '../../classes/client.class';
-import { OrderDetail } from '../../classes/pedido.class';
+import { CheckerClient } from '../../../shared/classes/checker.client.class';
+import { ClientName } from '../../../shared/classes/client.class';
+import { OrderDetail } from '../../../shared/classes/pedido.class';
 @Component({
   selector: 'app-checker',
   templateUrl: './checker.component.html',
@@ -44,6 +44,7 @@ export class CheckerComponent {
     this.checkerSvc.calcTotal();
   }
 
+
   deleteUserFromChecker (orderId: number, clientId:number): void{
     
     let details: OrderDetail[] = [];
@@ -76,14 +77,17 @@ export class CheckerComponent {
   deleteUserFromCheckerOver = function(id:string) {
     let showBtn = document.getElementById("checkerNameCleanerBtn"+id);
     if(showBtn != null){
-      showBtn.style.display = "flex"
+      showBtn.setAttribute("color", "warn");
+      //showBtn.style.display = "flex"
+      showBtn.style.visibility = "visible"
     }
   }
 
   deleteUserFromCheckerLeave = function(id:string) {
     let showBtn = document.getElementById("checkerNameCleanerBtn"+id);
     if(showBtn != null){
-      showBtn.style.display = "none"
+      //showBtn.style.display = "none"
+      showBtn.style.visibility = "hidden"
     }
   }
 
@@ -93,6 +97,7 @@ export class CheckerComponent {
         this.checkerSvc.refreshNewOrder();
         alert("Productos fueron empaquetados")
         this.checkerSvc.cleanChecker();
+        
       }, err =>{
         alert("Ocurrio un error " + err)
     })

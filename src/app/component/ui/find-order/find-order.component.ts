@@ -1,12 +1,13 @@
 import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
-import { MainViewService } from 'src/app/services/main.view.serive';
+import { MainViewService } from 'src/app/services/main.view.service';
 import { OrderService } from 'src/app/services/order.service';
 import { OrderReports } from 'src/app/shared/reports/order-report';
-import { EndPointConstant } from '../../../constants/constants';
-import { ClientName } from '../../classes/client.class';
-import { Order, OrderDetail } from '../../classes/pedido.class';
+import { EndPointConstant } from '../../../shared/constants/constants';
+import { ClientName } from '../../../shared/classes/client.class';
+import { Order, OrderDetail } from '../../../shared/classes/pedido.class';
+import { SpinnerService } from 'src/app/services/spinner.service';
 @Component({
   selector: 'app-find-order',
   templateUrl: './find-order.component.html',
@@ -20,24 +21,29 @@ export class FindOrderComponent {
   selectedOrderId: number = 0;
 
   constructor(private http: HttpClient,private _sanitizer: DomSanitizer, private readonly orderSvc: OrderService, 
-    private readonly mainViewSvc: MainViewService){}
+    private readonly mainViewSvc: MainViewService, private readonly spinnerSvc:SpinnerService){}
   
   ngOnInit():void{
-
+    this.spinnerSvc.setSpinnerValue(true);
     this.orderSvc.orderId$.subscribe(orderId => {this.selectedOrderId = orderId});
+    
     this.mainViewSvc.checkFindOrder$.subscribe((status:Boolean) => {
       if(status){
+        this.spinnerSvc.setSpinnerValue(true);
         this.http.get<Order[]>(EndPointConstant.ORDER_ENDPOINT+"all").subscribe(
           res => {
             this.orderData = res;
+            this.spinnerSvc.setSpinnerValue(false);
           }, err => {
-            
+            this.spinnerSvc.setSpinnerValue(false);
           }
           );
 
-          this.mainViewSvc.setFindOrderChecker(false);
+          
       }
-    }, err => {})
+    }, err => {
+      this.spinnerSvc.setSpinnerValue(false);
+    })
     
 
       
@@ -49,7 +55,7 @@ export class FindOrderComponent {
     let order!:Order;
     let orderDetail!: OrderDetail[];
     let clientName!: ClientName[];
-
+    this.spinnerSvc.setSpinnerValue(true);
     this.http.get<Order>(EndPointConstant.ORDER_ENDPOINT+orderId).subscribe(
       res => {
         order = res;
@@ -71,6 +77,7 @@ export class FindOrderComponent {
               body.innerHTML = orderReports.orderReport(order,orderDetail,clients);
   
               html.innerHTML = head.innerHTML + body.innerHTML;
+              this.spinnerSvc.setSpinnerValue(false);
               var ventana = window.open('', 'PRINT', 'height=900,width=700');
               ventana?.document.write(html.innerHTML);
               ventana?.document.close();
@@ -87,15 +94,19 @@ export class FindOrderComponent {
                 width:140,
                 windowWidth: 500
               })*/
-            }, err => {}
+            }, err => {
+              this.spinnerSvc.setSpinnerValue(false);
+            }
             );
 
         },errr => {
-          
+          this.spinnerSvc.setSpinnerValue(false);
         })
         
         
-      }, err => {}
+      }, err => {
+        this.spinnerSvc.setSpinnerValue(false);
+      }
       );
 
      

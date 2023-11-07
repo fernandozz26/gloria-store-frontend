@@ -1,0 +1,24 @@
+<div class="search-order-by-date">
+
+    <mat-form-field>
+        <mat-label>Seleccionar fechas</mat-label>
+        <mat-date-range-input [rangePicker]="picker">
+            <input matStartDate placeholder="Inicio" [(ngModel)]="stDate">
+            <input matEndDate placeholder="Fin" [(ngModel)]="edDate">
+        </mat-date-range-input>
+        <mat-hint>MM/DD/YYYY</mat-hint>
+        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-date-range-picker #picker></mat-date-range-picker>
+    </mat-form-field>
+
+    <button mat-raised-button color="primary" (click) = "lookProduct()">buscar</button>
+
+</div>
+
+
+<div class="grid-5">
+    <div *ngFor="let detail of mosaicoData">
+        <app-product-item [detail] = "detail"></app-product-item>
+    </div>
+    
+</div>

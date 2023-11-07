@@ -1,6 +1,6 @@
 import { DomSanitizer } from "@angular/platform-browser";
-import { ClientName } from "src/app/component/classes/client.class";
-import { Order, OrderDetail } from "src/app/component/classes/pedido.class";
+import { ClientName } from "src/app/shared/classes/client.class";
+import { Order, OrderDetail } from "src/app/shared/classes/pedido.class";
 
 export class OrderReports{
     static _sanitizer: any;

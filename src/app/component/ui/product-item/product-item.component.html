@@ -1,0 +1,12 @@
+<div class="product-item" (click)="addOrRemoveItem()">
+    <div class="product-item-check">
+        <mat-checkbox color="primary" class="example-margin" style="color: white;" [(ngModel)]="check" ></mat-checkbox>
+    </div>
+    <img class="product-item-img" [src]="img ? img : ''" alt="">
+    <div class="product-item-labels" >
+        <h2>{{'P'+(orderId ? orderId : '') + ' - ' + (clientName ? clientName : '')}}</h2>
+        <h5> {{(size ? 'Talla: '+ size : '') + ' Precio: $' + (price ? price : '') + '  X  ' + (quantity ? quantity : '')}}</h5>
+        <h2>{{'Total: $ ' + (subtotal ? subtotal : '')}}</h2>
+       
+    </div>
+</div>
