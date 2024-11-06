@@ -92,6 +92,7 @@ export class NewOrderComponent {
   onPaste(event: any){
     let detailImg = document.getElementById("imgOrderDetail");
 
+    console.log(event.clipboardData)
     for(var i = 0 ; i < event.clipboardData.items.length ; i++){
       // get the clipboard item
       var clipboardItem = event.clipboardData.items[i];
@@ -121,9 +122,6 @@ export class NewOrderComponent {
     let detailImg = document.getElementById("imgOrderDetail");
     detailImg?.classList.add("mini-picture-active");
     var imageBlob!: string | ArrayBuffer | null;
-    
-    
-    
   }
 
   base64ToImg(base64:any):any{
